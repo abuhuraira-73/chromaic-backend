@@ -9,7 +9,28 @@ dotenv.config();
 connectDB();
 
 const app = express();
-app.use(cors());
+
+// Configure CORS
+const allowedFrontendUrl = process.env.FRONTEND_URL;
+if (allowedFrontendUrl && allowedFrontendUrl.trim().length > 0) {
+  app.use(
+    cors({
+      origin: allowedFrontendUrl,
+      credentials: true,
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+      allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+        "X-Requested-With",
+        "Accept",
+      ],
+    })
+  );
+} else {
+  // Fallback: allow all origins (no credentials)
+  app.use(cors());
+}
+
 app.use(express.json());
 
 // User Routes
